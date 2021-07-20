@@ -164,17 +164,17 @@ func ms_to_hour_map_concurent(arr []string, f func(int, bool) string, c_ms chan 
 	c_ms <- newArr
 }
 
-func readHistory() []StreamingHistory {
+func readHistory(fileNameArray []string) []StreamingHistory {
 	var streamingHistory []StreamingHistory
 	var tempHistory []StreamingHistory
 
-	matches, err := filepath.Glob("upload/StreamingHistory*.json")
-	if err != nil {
-		fmt.Println(err)
-	}
+	// matches, err := filepath.Glob("upload/StreamingHistory*.json")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-	for _, v := range matches {
-		streamingHistoryData := readFile(v)
+	for _, v := range fileNameArray {
+		streamingHistoryData := readFile("upload/" + v)
 		err := json.Unmarshal(streamingHistoryData, &tempHistory)
 		if err != nil {
 			fmt.Printf("failed to Unmarshal json file, error: %v\n", err)
@@ -185,8 +185,8 @@ func readHistory() []StreamingHistory {
 	return streamingHistory
 }
 
-func createData() error {
-	streamingHistory = readHistory()
+func createData(fileNameArray []string) error {
+	streamingHistory = readHistory(fileNameArray)
 
 	for i := 0; i < len(streamingHistory); i++ {
 		streamingHistory[i].hhmmss = ms_to_hour(streamingHistory[0].MsPlayed, true)
@@ -245,7 +245,7 @@ func copyOutput(r io.Reader) {
 }
 
 func showCharts(c *gin.Context) {
-	if _, err := os.Stat("df"); os.IsNotExist(err) { // if streamingHistory == nil
+	if _, err := os.Stat("df"); os.IsNotExist(err) {
 		c.Redirect(http.StatusFound, "/upload")
 	} else {
 		os.RemoveAll("df")
@@ -334,7 +334,7 @@ func uploadFilePost(c *gin.Context) {
 
 	cmd.Wait()
 
-	err = createData()
+	err = createData(fileNameArray)
 	if err != nil {
 		fmt.Println("catch uploadFilePost() createData() error")
 		if _, err := os.Stat("upload"); !os.IsNotExist(err) {
