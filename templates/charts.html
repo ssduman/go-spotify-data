@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  {{block "header" .}} {{end}}
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <canvas id="chart1" width="400" height="400"></canvas>
+        </div>
+        <div class="col-sm">
+          <canvas id="chart2" width="400" height="400"></canvas>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <canvas id="chart3" width="400" height="400"></canvas>
+        </div>
+        <div class="col-sm">
+          <table id="history" class="display" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Artist</th>
+                <th>Song</th>
+                <th>Date</th>
+                <th>hhmmss</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <table id="top_1" class="display" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Artist</th>
+                <th>Song</th>
+                <th>Play Count</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table id="top_2" class="display" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Artist</th>
+                <th>Song</th>
+                <th>Play Time</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <table id="top_artist" class="display" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Artist</th>
+                <th>Play Count</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table id="top_artist_time" class="display" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Artist</th>
+                <th>Play Time</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <canvas id="top_month" width="400" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+
+    {{block "footer" .}} {{end}}
+
+    <script>
+      var records = {{.streamingHistory}}
+      var top_artists_tracks_count = {{.top_artists_tracks_count}}
+      var top_artists_tracks_playtime = {{.top_artists_tracks_playtime}}
+      var top_artist = {{.top_artist}}
+      var top_artist_time = {{.top_artist_time}}
+      var intervalData = {{.intervalData}}
+      var intervalDataLabel = {{.intervalDataLabel}}
+      var monthlyData = {{.monthlyData}}
+      var monthlyDataLabel = {{.monthlyDataLabel}}
+      var hourData = {{.hourData}}
+      var hourDataLabel = {{.hourDataLabel}}
+
+      var monthTopMonths = {{.monthTopMonths}}
+      var monthTop1Artis = {{.monthTop1Artis}}
+      var monthTop1Count = {{.monthTop1Count}}
+      var monthTop2Artis = {{.monthTop2Artis}}
+      var monthTop2Count = {{.monthTop2Count}}
+      var monthTop3Artis = {{.monthTop3Artis}}
+      var monthTop3Count = {{.monthTop3Count}}
+
+      function ms_to_hour(ms, hour=False) {
+        seconds = ((Math.floor(ms / 1000) % 60)).toString().padStart(2, "0")
+        minutes = ((Math.floor(ms / (1000 * 60)) % 60)).toString().padStart(2, "0")
+        hours = (Math.floor((ms / (1000 * 60 * 60)) % 24)).toString().padStart(2, "0")
+
+        if (hour) {
+          return hours + ":" + minutes + ":" + seconds
+        }
+        return minutes + ":" + seconds
+      }
+
+      records = records.map(obj => {
+        obj.hhmmss = ms_to_hour(obj.msPlayed, true)
+        return obj
+      })
+
+      monthTopMonths = monthTopMonths.map(x => {
+        return x.split(" ")[0]
+      })
+
+      $(document).ready(function () {
+
+        // $("#history").append('<caption style="caption-side: top-right"> History </caption>');
+        $("#history").DataTable(
+          {
+            data: records,
+            columns: [
+              {"data": "artistName"},
+              {"data": "trackName"},
+              {"data": "endTime"},
+              {"data": "hhmmss"}
+      		  ],
+            order: [[ 2, "asc" ]]
+          }
+        );
+
+        $("#top_1").DataTable(
+          {
+            data: top_artists_tracks_count,
+            order: [[ 2, "desc" ]]
+          }
+        );
+
+        $("#top_2").DataTable(
+          {
+            data: top_artists_tracks_playtime,
+            order: [[ 2, "desc" ]]
+          }
+        );
+
+        $("#top_artist").DataTable(
+          {
+            data: top_artist,
+            order: [[ 1, "desc" ]]
+          }
+        );
+
+        $("#top_artist_time").DataTable(
+          {
+            data: top_artist_time,
+            order: [[ 1, "desc" ]]
+          }
+        );
+      });
+    </script>
+
+    <script src="../assets/js/charts.js"></script>
+  </body>
+</html>
