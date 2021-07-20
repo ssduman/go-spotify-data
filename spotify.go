@@ -307,7 +307,12 @@ func uploadFilePost(c *gin.Context) {
 		fileNameArray = append(fileNameArray, filename)
 	}
 
-	command := []string{"python", "script/spotify.py", "--path", "upload", "--files"}
+	pythonVer := "python"
+	if os.Getenv("IS_DOCKER") != "" {
+		pythonVer = "python3"
+	}
+
+	command := []string{pythonVer, "script/spotify.py", "--path", "upload", "--files"}
 	sort.Strings(fileNameArray)
 	command = append(command, fileNameArray...)
 	cmd := exec.Command(command[0], command[1:]...)
