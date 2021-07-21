@@ -1,6 +1,9 @@
 # docker build -t spotifyalpine .
 # docker run -p 8080:8080 -tid spotifyalpine
 
+# heroku container:push web -a go-spotify-data
+# heroku container:release web -a go-spotify-data
+
 ## method 1 -> 542mb
 FROM golang:alpine
 
@@ -14,8 +17,8 @@ RUN go get github.com/gin-gonic/gin
 RUN go build -o /gotify
 
 ENV IS_DOCKER=true
-ENTRYPOINT /gotify --port 8080 --host="0.0.0.0"
-EXPOSE 8080
+ENTRYPOINT /gotify --port $PORT
+# EXPOSE 8080
 
 ## method 2 -> 1.25gb
 # FROM golang:latest

@@ -276,7 +276,7 @@ func showCharts(c *gin.Context) {
 
 func uploadFileGet(c *gin.Context) {
 	if _, err := os.Stat("upload"); os.IsNotExist(err) {
-		os.Mkdir("upload", os.ModeDir)
+		os.Mkdir("upload", 0777)
 	}
 
 	c.HTML(http.StatusOK, "upload.html", gin.H{})
@@ -284,7 +284,7 @@ func uploadFileGet(c *gin.Context) {
 
 func uploadFilePost(c *gin.Context) {
 	if _, err := os.Stat("upload"); os.IsNotExist(err) {
-		os.Mkdir("upload", os.ModeDir)
+		os.Mkdir("upload", 0777)
 	}
 
 	form, err := c.MultipartForm()
@@ -364,5 +364,10 @@ func main() {
 	router.GET("/upload", uploadFileGet)
 	router.POST("/upload", uploadFilePost)
 
-	router.Run(":8080")
+	port := os.Getenv("PORT")
+	if port != "" {
+		router.Run(":" + port)
+	} else {
+		router.Run(":8080")
+	}
 }
