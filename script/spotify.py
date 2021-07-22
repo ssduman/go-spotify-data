@@ -9,6 +9,7 @@ import pandas as pd
 def get_args():
     parser = argparse.ArgumentParser(description="spotify")
     parser.add_argument("--path", type=str, default="upload", help="input files")
+    parser.add_argument("--timeZone", type=str, default="UTC", help="time zone")
     parser.add_argument("--files", nargs="+")
     return parser.parse_args()
 
@@ -35,7 +36,7 @@ def main():
     spotify_df = spotify_df[["artistName", "trackName", "endTime", "msPlayed"]]
     spotify_df["endTime"] = pd.to_datetime(spotify_df["endTime"])
     spotify_df["endTime"] = spotify_df["endTime"].dt.tz_localize(pytz.utc)
-    spotify_df["endTime"] = spotify_df["endTime"].dt.tz_convert("Europe/Istanbul")
+    spotify_df["endTime"] = spotify_df["endTime"].dt.tz_convert(args.timeZone)
     spotify_df.to_csv("df/spotify_df.csv", index=False)
 
     time_lists = [str(m).split(" ")[1][:-9] for m in spotify_df["endTime"].tolist()]

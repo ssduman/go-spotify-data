@@ -72,14 +72,13 @@ func readFile(filename string) []byte {
 	return data
 }
 
-func UTCtoIstanbul(ct CustomTime) time.Time {
-	location, err := time.LoadLocation("Europe/Istanbul")
+func convertUTC(ct CustomTime, timeZone string) time.Time {
+	location, err := time.LoadLocation(timeZone)
 	if err != nil {
 		panic(err)
 	}
 
 	converted := ct.In(location).Format(ctLayout)
-	fmt.Println(ct.In(location))
 
 	convertedTime, err := time.Parse(ctLayout, converted)
 	if err != nil {
@@ -202,7 +201,6 @@ func createData(fileNameArray []string) error {
 	templateDF["top_artists_tracks_playtime_df"], err = readCSV("df/top_artists_tracks_playtime_df.csv")
 
 	if err != nil {
-		fmt.Println("catch createData() readCSV() error")
 		return err
 	}
 
@@ -279,7 +277,12 @@ func uploadFileGet(c *gin.Context) {
 		os.Mkdir("upload", 0777)
 	}
 
-	c.HTML(http.StatusOK, "upload.html", gin.H{})
+	errorMessage, err := c.Cookie("errorMessage")
+	if err != nil {
+		errorMessage = ""
+	}
+
+	c.HTML(http.StatusOK, "upload.html", gin.H{"errorMessage": errorMessage})
 }
 
 func uploadFilePost(c *gin.Context) {
@@ -294,6 +297,7 @@ func uploadFilePost(c *gin.Context) {
 	}
 	files := form.File["files"]
 	if len(files) == 0 {
+		c.SetCookie("errorMessage", "No file uploaded", 10, "/", c.Request.URL.Hostname(), false, true)
 		c.Redirect(http.StatusFound, "/upload")
 		return
 	}
@@ -312,10 +316,19 @@ func uploadFilePost(c *gin.Context) {
 		pythonVer = "python3"
 	}
 
-	command := []string{pythonVer, "script/spotify.py", "--path", "upload", "--files"}
+	timeZone := c.PostForm("timeZone")
+	_, err = time.LoadLocation(timeZone)
+	if err != nil {
+		c.SetCookie("errorMessage", "Time zone not found", 10, "/", c.Request.URL.Hostname(), false, true)
+		c.Redirect(http.StatusFound, "/upload")
+		return
+	}
+
+	command := []string{pythonVer, "script/spotify.py", "--path", "upload", "--timeZone", timeZone, "--files"}
 	sort.Strings(fileNameArray)
 	command = append(command, fileNameArray...)
 	cmd := exec.Command(command[0], command[1:]...)
+	
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		panic(err)
@@ -336,13 +349,13 @@ func uploadFilePost(c *gin.Context) {
 
 	err = createData(fileNameArray)
 	if err != nil {
-		fmt.Println("catch uploadFilePost() createData() error")
 		if _, err := os.Stat("upload"); !os.IsNotExist(err) {
 			os.RemoveAll("upload")
 		}
 		if _, err := os.Stat("df"); !os.IsNotExist(err) {
 			os.RemoveAll("df")
 		}
+		c.SetCookie("errorMessage", "Wrong data format, https://github.com/ssduman/go-spotify-data/blob/master/sample/StreamingHistorySample.json", 10, "/", c.Request.URL.Hostname(), false, true)
 		c.Redirect(http.StatusFound, "/upload")
 		return
 	}

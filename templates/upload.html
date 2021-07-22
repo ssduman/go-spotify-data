@@ -1,15 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Multiple file upload</title>
-  </head>
-  <body>
-    <h1>Upload StreamingHistory</h1>
+  {{block "header" .}} {{end}}
 
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      Files: <input type="file" name="files" multiple /><br /><br />
-      <input type="submit" value="Submit" />
-    </form>
+  <div class="container" style="width: 680px;">
+      <div class="row">
+        <div class="col">
+          <h2 style="padding-top: 40px; padding-bottom: 20px;">Upload Streaming History</h2>
+          
+          <form action="/upload" method="post" enctype="multipart/form-data">
+            
+            <div class="form-group row">
+              <label for="timeZone" class="col-2 col-form-label">Time Zone: </label>
+              <div class="col-8">
+                <input type="text" class="form-control" id="timeZone" aria-describedby="timeZone" name="timeZone">
+                <small id="timeZoneHelpBlock" class="form-text text-muted"> 
+                  Spotify data is in UTC format. <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">All time zones.</a> Required for conversion.
+                </small>
+              </div>
+            </div>
+          
+            <div class="form-group row">
+              <label for="files" class="col-2 col-form-label">Files: </label>
+              <div class="col-6">
+                <input type="file" id="files" name="files" multiple /><br /><br />
+              </div>
+              <small id="filesHelpBlock" class="form-text text-muted"> 
+                {{.errorMessage}}
+              </small>
+            </div>
+            
+            <input type="submit" value="Submit" />
+          
+          </form>
+        </div>
+      </div>
+  </div>
+
+  <script>
+    document.getElementById("timeZone").value = Intl.DateTimeFormat().resolvedOptions().timeZone
+  </script>
   </body>
 </html>
