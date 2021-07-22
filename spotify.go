@@ -184,11 +184,12 @@ func readHistory(fileNameArray []string) []StreamingHistory {
 	return streamingHistory
 }
 
-func createData(fileNameArray []string) error {
+func createData(fileNameArray []string, timeZone string) error {
 	streamingHistory = readHistory(fileNameArray)
 
 	for i := 0; i < len(streamingHistory); i++ {
 		streamingHistory[i].hhmmss = ms_to_hour(streamingHistory[0].MsPlayed, true)
+		streamingHistory[i].EndTime = CustomTime{convertUTC(streamingHistory[i].EndTime, timeZone)}
 	}
 
 	monthly_df, err := readCSV("df/monthly_df.csv")
@@ -328,7 +329,7 @@ func uploadFilePost(c *gin.Context) {
 	sort.Strings(fileNameArray)
 	command = append(command, fileNameArray...)
 	cmd := exec.Command(command[0], command[1:]...)
-	
+
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		panic(err)
@@ -347,7 +348,7 @@ func uploadFilePost(c *gin.Context) {
 
 	cmd.Wait()
 
-	err = createData(fileNameArray)
+	err = createData(fileNameArray, timeZone)
 	if err != nil {
 		if _, err := os.Stat("upload"); !os.IsNotExist(err) {
 			os.RemoveAll("upload")
