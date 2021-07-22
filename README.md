@@ -2,6 +2,7 @@
 * Full stack website for Spotify data: https://go-spotify-data.herokuapp.com/
 ## Specifications: ##
 * Go to https://www.spotify.com/us/account/privacy/ and download your data.
+* For testing, try `sample/StreamingHistorySample.json`.
 * Duration, hourly distribution, monthly distribution and monthly top 3 artists charts with Chart.js.
 * History, play count and play time for tracks and artists tables with DataTables.
 ## Dependencies: ##
