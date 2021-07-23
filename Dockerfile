@@ -4,22 +4,45 @@
 # heroku container:push web -a go-spotify-data
 # heroku container:release web -a go-spotify-data
 
-## method 1 -> 542mb
+###############################################################################
+## method 0.5 -> 246mb
+# https://www.youtube.com/watch?v=FQS1p88Q0q8
 FROM golang:alpine
 
-ADD . /go/src/gotify
-RUN apk add py3-numpy py3-pandas
+WORKDIR /src
+COPY go.sum go.mod ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -o /bin/app .
 
-WORKDIR /go/src/gotify
-RUN go mod init gotify
-COPY . /go/src/gotify
-RUN go get github.com/gin-gonic/gin
-RUN go build -o /gotify
+FROM python:slim
+
+COPY . .
+COPY --from=0 /bin/app /bin/app
+RUN pip install --no-cache-dir numpy pandas
 
 ENV IS_DOCKER=true
-ENTRYPOINT /gotify --port $PORT
+ENTRYPOINT /bin/app --port $PORT
 # EXPOSE 8080
 
+###############################################################################
+## method 1 -> 542mb
+# FROM golang:alpine
+
+# ADD . /go/src/gotify
+# RUN apk add py3-numpy py3-pandas
+
+# WORKDIR /go/src/gotify
+# RUN go mod init gotify
+# COPY . /go/src/gotify
+# RUN go get github.com/gin-gonic/gin
+# RUN go build -o /gotify
+
+# ENV IS_DOCKER=true
+# ENTRYPOINT /gotify --port $PORT
+# # EXPOSE 8080
+
+###############################################################################
 ## method 2 -> 1.25gb
 # FROM golang:latest
 
@@ -37,3 +60,5 @@ ENTRYPOINT /gotify --port $PORT
 # ENV IS_DOCKER=true
 # ENTRYPOINT /gotify --port 8080 --host="0.0.0.0"
 # EXPOSE 8080
+
+###############################################################################
