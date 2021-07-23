@@ -78,6 +78,18 @@
         <div class="col-sm">
           <canvas id="top_month" width="400" height="400"></canvas>
         </div>
+        <div class="col-sm">
+          <table id="nonstop_play" class="display" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Play Time</th>
+                <th>Track Count</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -85,6 +97,7 @@
 
     <script>
       var records = {{.streamingHistory}}
+      var nonstop_play = {{.nonstop_play}}
       var top_artists_tracks_count = {{.top_artists_tracks_count}}
       var top_artists_tracks_playtime = {{.top_artists_tracks_playtime}}
       var top_artist = {{.top_artist}}
@@ -165,6 +178,13 @@
           {
             data: top_artist_time,
             order: [[ 1, "desc" ]]
+          }
+        );
+
+        $("#nonstop_play").DataTable(
+          {
+            data: nonstop_play,
+            order: [[ 2, "desc" ]]
           }
         );
       });

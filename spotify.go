@@ -192,13 +192,14 @@ func createData(fileNameArray []string, timeZone string) error {
 		streamingHistory[i].EndTime = CustomTime{convertUTC(streamingHistory[i].EndTime, timeZone)}
 	}
 
-	monthly_df, err := readCSV("df/monthly_df.csv")
 	hour_df, err := readCSV("df/spotify_hour_df.csv")
+	monthly_df, err := readCSV("df/monthly_df.csv")
 	interval_df, err := readCSV("df/interval_df.csv")
+	top_monthly_df, err := readCSV("df/top_monthly_df.csv")
 	templateDF["top_artist_df"], err = readCSV("df/top_artist_df.csv")
+	templateDF["nonstop_play_df"], err = readCSV("df/nonstop_play_df.csv")
 	templateDF["top_artist_time_df"], err = readCSV("df/top_artist_time_df.csv")
 	templateDF["top_artists_tracks_count_df"], err = readCSV("df/top_artists_tracks_count_df.csv")
-	top_monthly_df, err := readCSV("df/top_monthly_df.csv")
 	templateDF["top_artists_tracks_playtime_df"], err = readCSV("df/top_artists_tracks_playtime_df.csv")
 
 	if err != nil {
@@ -266,6 +267,7 @@ func showCharts(c *gin.Context) {
 			"monthTop3Count": templateData["monthTop3Count"],
 
 			"top_artist":                  templateDF["top_artist_df"][1:],
+			"nonstop_play":                templateDF["nonstop_play_df"][1:],
 			"top_artist_time":             templateDF["top_artist_time_df"][1:],
 			"top_artists_tracks_count":    templateDF["top_artists_tracks_count_df"][1:],
 			"top_artists_tracks_playtime": templateDF["top_artists_tracks_playtime_df"][1:],
