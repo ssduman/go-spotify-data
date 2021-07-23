@@ -2,15 +2,16 @@
 * Full stack website for Spotify data: https://go-spotify-data.herokuapp.com/
 ## Specifications: ##
 * Go to https://www.spotify.com/us/account/privacy/ and download your data.
+* No data is kept, uploads and auxilary files are deleted instantly.
 * For testing, try `sample/StreamingHistorySample.json`.
 * Duration, hourly distribution, monthly distribution and monthly top 3 artists charts with Chart.js.
-* History, play count and play time for tracks and artists tables with DataTables.
+* History, non-stop play time and play count and play time for tracks and artists tables with DataTables.
 ## Dependencies: ##
 * Golang
 * Python 3, NumPy and Pandas
 * Docker (optional)
 ## Run: ##
-* `go mod init spotify`, `go mod tidy` then `go run spotify.go` and go to http://localhost:8080/. 
+* `go run spotify.go` and go to http://localhost:8080/. 
 * `docker build -t spotifyalpine .` then `docker run -p 8080:8080 -tid spotifyalpine` and go to http://localhost:8080/. 
 ## Images: ##
 <table>
