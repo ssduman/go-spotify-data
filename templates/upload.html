@@ -2,40 +2,43 @@
 <html lang="en">
   {{block "header" .}} {{end}}
 
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="form-group col-7">
-        <h2 style="padding-top: 40px; padding-bottom: 20px;">Upload Streaming History</h2>
+  <main class="flex-fill">
+    
+    <div class="container pt-5">
+      <div class="col-sm-12 col-lg-6 mr-auto ml-auto border p-4">
+        
+        <div class="text-center pb-4" >
+          <h2>Upload Streaming History</h2>
+          <small  class="form-text text-muted" id="downloadDataHelpBlock"> 
+            <a style="color:currentColor" href="https://www.spotify.com/us/account/privacy/"> <u>Download your data</u> </a>
+          </small>
+        </div> 
         
         <form class="form-horizontal" action="/upload" method="post" enctype="multipart/form-data">
           
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label" for="timeZone">Time Zone: </label>
-            <div class="col-sm">
-              <input class="form-control" type="text" id="timeZone" aria-describedby="timeZone" name="timeZone">
-              <small id="timeZoneHelpBlock" class="form-text text-muted"> 
-                Spotify data is in UTC format. 
-                <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">All time zones.</a> 
-                Required for conversion.
-              </small>
-            </div>
-          </div>
-        
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label" for="files">Files: </label>
-            <div class="col-sm">
-              <input type="file" id="files" name="files" multiple />
-            </div>
-            <small id="filesHelpBlock" class="form-text text-muted"> 
-              {{.errorMessage}}
+          <div class="form-group">
+            <label for="timeZone">Time Zone: </label>
+            <input class="form-control" type="text" id="timeZone" aria-describedby="timeZone" name="timeZone">
+            <small class="form-text text-muted" id="timeZoneHelpBlock"> 
+              Spotify data is in UTC format, required for conversion.
+              <a style="color:currentColor" href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">All time zones.</a> 
             </small>
           </div>
-          
-          <div class="form-group row">
-            <div class="col-sm-10 offset-sm-2">
-              <input class="btn btn-primary float-left" type="submit" value="Submit" />
-              <input class="btn btn-primary float-right" type="submit" value="Try with sample" onclick="sample()">
+        
+          <div class="form-group">
+            <div class="custom-file">
+              <label class="custom-file-label" for="files" id="filesLabel">Choose file</label>
+              <input class="custom-file-input form-control" type="file" id="files" name="files" multiple onchange="uploaded(this.files)" />
             </div>
+            <small class="form-text text-muted" id="filesHelpBlock" style="white-space: pre;"> {{.errorMessage}} </small>
+          </div>
+          
+          <div class="form-group">
+              <input class="btn btn-block btn-outline-dark" type="submit" value="Submit" />
+              <input class="btn btn-block btn-outline-dark" type="submit" value="Try Sample" onclick="sample()">
+              <small class="form-text text-muted text-center" id="sampleLink">
+                <a style="color:currentColor" href="https://github.com/ssduman/go-spotify-data/blob/master/sample/StreamingHistorySample.json">Sample</a>
+              </small>
           </div>
         
           <input type="hidden" id="isSample" type="text" name="isSample" value="">
@@ -43,10 +46,28 @@
         </form>
       </div>
     </div>
-  </div>
+  
+  </main>
+
+  {{block "footer" .}} {{end}}
 
   <script>
     document.getElementById("timeZone").value = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+    function uploaded(files) {
+      names = []
+      for (let i in files) {
+        if (files.hasOwnProperty(i)) {
+          names.push(files[i].name);
+        }
+      }
+      if (names.length == 0) {
+        document.getElementById("filesLabel").innerHTML = "Choose file"
+      }
+      else {
+        document.getElementById("filesLabel").innerHTML = names.join(", ")
+      }
+    }
     
     function sample() {
       document.getElementById("isSample").value = "true"

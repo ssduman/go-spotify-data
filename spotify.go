@@ -371,7 +371,7 @@ func uploadFilePost(c *gin.Context) {
 		if _, err := os.Stat("df"); !os.IsNotExist(err) {
 			os.RemoveAll("df")
 		}
-		c.SetCookie("errorMessage", "Wrong data format, https://github.com/ssduman/go-spotify-data/blob/master/sample/StreamingHistorySample.json", 10, "/", c.Request.URL.Hostname(), false, true)
+		c.SetCookie("errorMessage", "Wrong data format", 10, "/", c.Request.URL.Hostname(), false, true)
 		c.Redirect(http.StatusFound, "/upload")
 		return
 	}

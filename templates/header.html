@@ -1,8 +1,8 @@
 {{define "header"}}
 <head>
-  <title>Charts</title>
+  <title>Spotify Data Visualizer</title>
   <meta charset="utf-8" />
-  <meta name="description" content="spotify stats" />
+  <meta name="description" content="Spotify data statics" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <link rel="icon" type="image/png" href="../assets/img/favicon.png" />
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" />
@@ -14,9 +14,9 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#"><img src="../assets/img/favicon.png" style="width: 32px; height: 32px;" /> </a>
+<body class="d-flex flex-column min-vh-100">
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark text-light">
+    <a class="navbar-brand" href="/"><img src="../assets/img/favicon.png" style="width: 32px; height: 32px;" /> </a>
     <button
       class="navbar-toggler"
       type="button"
@@ -28,13 +28,10 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse text-light" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">Home</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Link</a>
+          <a class="nav-link text-light" href="/">Home</a>
         </li>
       </ul>
     </div>
