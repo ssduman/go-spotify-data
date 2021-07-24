@@ -2,42 +2,55 @@
 <html lang="en">
   {{block "header" .}} {{end}}
 
-  <div class="container" style="width: 680px;">
-      <div class="row">
-        <div class="col">
-          <h2 style="padding-top: 40px; padding-bottom: 20px;">Upload Streaming History</h2>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="form-group col-7">
+        <h2 style="padding-top: 40px; padding-bottom: 20px;">Upload Streaming History</h2>
+        
+        <form class="form-horizontal" action="/upload" method="post" enctype="multipart/form-data">
           
-          <form action="/upload" method="post" enctype="multipart/form-data">
-            
-            <div class="form-group row">
-              <label for="timeZone" class="col-2 col-form-label">Time Zone: </label>
-              <div class="col-8">
-                <input type="text" class="form-control" id="timeZone" aria-describedby="timeZone" name="timeZone">
-                <small id="timeZoneHelpBlock" class="form-text text-muted"> 
-                  Spotify data is in UTC format. <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">All time zones.</a> Required for conversion.
-                </small>
-              </div>
-            </div>
-          
-            <div class="form-group row">
-              <label for="files" class="col-2 col-form-label">Files: </label>
-              <div class="col-6">
-                <input type="file" id="files" name="files" multiple /><br /><br />
-              </div>
-              <small id="filesHelpBlock" class="form-text text-muted"> 
-                {{.errorMessage}}
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="timeZone">Time Zone: </label>
+            <div class="col-sm">
+              <input class="form-control" type="text" id="timeZone" aria-describedby="timeZone" name="timeZone">
+              <small id="timeZoneHelpBlock" class="form-text text-muted"> 
+                Spotify data is in UTC format. 
+                <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">All time zones.</a> 
+                Required for conversion.
               </small>
             </div>
-            
-            <input type="submit" value="Submit" />
+          </div>
+        
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="files">Files: </label>
+            <div class="col-sm">
+              <input type="file" id="files" name="files" multiple />
+            </div>
+            <small id="filesHelpBlock" class="form-text text-muted"> 
+              {{.errorMessage}}
+            </small>
+          </div>
           
-          </form>
-        </div>
+          <div class="form-group row">
+            <div class="col-sm-10 offset-sm-2">
+              <input class="btn btn-primary float-left" type="submit" value="Submit" />
+              <input class="btn btn-primary float-right" type="submit" value="Try with sample" onclick="sample()">
+            </div>
+          </div>
+        
+          <input type="hidden" id="isSample" type="text" name="isSample" value="">
+
+        </form>
       </div>
+    </div>
   </div>
 
   <script>
     document.getElementById("timeZone").value = Intl.DateTimeFormat().resolvedOptions().timeZone
+    
+    function sample() {
+      document.getElementById("isSample").value = "true"
+    }
   </script>
   </body>
 </html>

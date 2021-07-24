@@ -151,7 +151,7 @@ def main():
 
     spotify = []
     for history_file in sorted(args.files):
-        with open(args.path  + "/" + history_file, encoding="utf8") as f:
+        with open(args.path + history_file, encoding="utf8") as f:
             spotify.extend(json.load(f))
 
     spotify_df = pd.DataFrame.from_records(spotify)

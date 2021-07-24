@@ -87,17 +87,17 @@ func convertUTC(ct CustomTime, timeZone string) time.Time {
 	return convertedTime
 }
 
-func readCSV(filePath string) ([][]string, error) {
-	f, err := os.Open(filePath)
+func readCSV(path string) ([][]string, error) {
+	f, err := os.Open(path)
 	if err != nil {
-		fmt.Printf("Unable to read input file "+filePath, err)
+		fmt.Printf("Unable to read input file "+path, err)
 	}
 	defer f.Close()
 
 	csvReader := csv.NewReader(f)
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		fmt.Printf("Unable to parse file as CSV for "+filePath, err)
+		fmt.Printf("Unable to parse file as CSV for "+path, err)
 		return nil, err
 	}
 
@@ -163,17 +163,12 @@ func ms_to_hour_map_concurent(arr []string, f func(int, bool) string, c_ms chan 
 	c_ms <- newArr
 }
 
-func readHistory(fileNameArray []string) []StreamingHistory {
+func readHistory(filesPath string, filesNameArray []string) []StreamingHistory {
 	var streamingHistory []StreamingHistory
 	var tempHistory []StreamingHistory
 
-	// matches, err := filepath.Glob("upload/StreamingHistory*.json")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	for _, v := range fileNameArray {
-		streamingHistoryData := readFile("upload/" + v)
+	for _, v := range filesNameArray {
+		streamingHistoryData := readFile(filesPath + v)
 		err := json.Unmarshal(streamingHistoryData, &tempHistory)
 		if err != nil {
 			fmt.Printf("failed to Unmarshal json file, error: %v\n", err)
@@ -184,8 +179,8 @@ func readHistory(fileNameArray []string) []StreamingHistory {
 	return streamingHistory
 }
 
-func createData(fileNameArray []string, timeZone string) error {
-	streamingHistory = readHistory(fileNameArray)
+func createData(filesPath string, filesNameArray []string, timeZone string) error {
+	streamingHistory = readHistory(filesPath, filesNameArray)
 
 	for i := 0; i < len(streamingHistory); i++ {
 		streamingHistory[i].hhmmss = ms_to_hour(streamingHistory[0].MsPlayed, true)
@@ -298,20 +293,30 @@ func uploadFilePost(c *gin.Context) {
 		c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
 		return
 	}
+
+	isSample := c.PostForm("isSample")
+
 	files := form.File["files"]
-	if len(files) == 0 {
+	filesPath := "upload/"
+	filesNameArray := make([]string, 0)
+
+	if len(files) == 0 && isSample == "" {
 		c.SetCookie("errorMessage", "No file uploaded", 10, "/", c.Request.URL.Hostname(), false, true)
 		c.Redirect(http.StatusFound, "/upload")
 		return
-	}
-	fileNameArray := make([]string, 0)
-	for _, file := range files {
-		filename := filepath.Base(file.Filename)
-		if err := c.SaveUploadedFile(file, "upload/"+filename); err != nil { // TODO: unique folder name
-			c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
-			return
+	} else if len(files) != 0 && isSample == "" {
+		for _, file := range files {
+			filename := filepath.Base(file.Filename)
+			if err := c.SaveUploadedFile(file, filesPath+filename); err != nil {
+				c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
+				return
+			}
+			filesNameArray = append(filesNameArray, filename)
 		}
-		fileNameArray = append(fileNameArray, filename)
+		sort.Strings(filesNameArray)
+	} else if isSample != "" {
+		filesNameArray = append(filesNameArray, "StreamingHistorySample.json")
+		filesPath = "sample/"
 	}
 
 	pythonVer := "python"
@@ -327,9 +332,9 @@ func uploadFilePost(c *gin.Context) {
 		return
 	}
 
-	command := []string{pythonVer, "script/spotify.py", "--path", "upload", "--timeZone", timeZone, "--files"}
-	sort.Strings(fileNameArray)
-	command = append(command, fileNameArray...)
+	command := []string{pythonVer, "script/spotify.py", "--path", filesPath, "--timeZone", timeZone, "--files"}
+	command = append(command, filesNameArray...)
+
 	cmd := exec.Command(command[0], command[1:]...)
 
 	stdout, err := cmd.StdoutPipe()
@@ -350,7 +355,7 @@ func uploadFilePost(c *gin.Context) {
 
 	cmd.Wait()
 
-	err = createData(fileNameArray, timeZone)
+	err = createData(filesPath, filesNameArray, timeZone)
 	if err != nil {
 		if _, err := os.Stat("upload"); !os.IsNotExist(err) {
 			os.RemoveAll("upload")
