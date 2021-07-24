@@ -150,23 +150,32 @@ def main():
     os.makedirs("df", exist_ok=True)
 
     spotify = []
-    for history_file in sorted(args.files):
-        with open(args.path + history_file, encoding="utf8") as f:
-            spotify.extend(json.load(f))
+    try:
+        for history_file in sorted(args.files):
+            with open(args.path + history_file, encoding="utf8") as f:
+                spotify.extend(json.load(f))
+    except:
+        pass
 
-    spotify_df = pd.DataFrame.from_records(spotify)
-    spotify_df = spotify_df[["artistName", "trackName", "endTime", "msPlayed"]]
-    spotify_df["endTime"] = pd.to_datetime(spotify_df["endTime"])
-    spotify_df["endTime"] = spotify_df["endTime"].dt.tz_localize(tz="UTC")
-    spotify_df["endTime"] = spotify_df["endTime"].dt.tz_convert(args.timeZone)
-    spotify_df.to_csv("df/spotify_df.csv", index=False)
+    try:
+        spotify_df = pd.DataFrame.from_records(spotify)
+        spotify_df = spotify_df[["artistName", "trackName", "endTime", "msPlayed"]]
+        spotify_df["endTime"] = pd.to_datetime(spotify_df["endTime"])
+        spotify_df["endTime"] = spotify_df["endTime"].dt.tz_localize(tz="UTC")
+        spotify_df["endTime"] = spotify_df["endTime"].dt.tz_convert(args.timeZone)
+        spotify_df.to_csv("df/spotify_df.csv", index=False)
+    except:
+        pass
 
-    top3(spotify_df)
-    intervals(spotify_df)
-    make_tracks(spotify_df)
-    make_artists(spotify_df)
-    distributions(spotify_df)
-    nonstop_playing(spotify_df)
+    try:
+        top3(spotify_df)
+        intervals(spotify_df)
+        make_tracks(spotify_df)
+        make_artists(spotify_df)
+        distributions(spotify_df)
+        nonstop_playing(spotify_df)
+    except:
+        pass
 
 if __name__ == "__main__":
     main()

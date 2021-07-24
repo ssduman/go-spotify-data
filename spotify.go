@@ -90,14 +90,15 @@ func convertUTC(ct CustomTime, timeZone string) time.Time {
 func readCSV(path string) ([][]string, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		fmt.Printf("Unable to read input file "+path, err)
+		// fmt.Printf("Unable to read input file "+path, err)
+		return nil, err
 	}
 	defer f.Close()
 
 	csvReader := csv.NewReader(f)
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		fmt.Printf("Unable to parse file as CSV for "+path, err)
+		// fmt.Printf("Unable to parse file as CSV for "+path, err)
 		return nil, err
 	}
 
@@ -163,7 +164,7 @@ func ms_to_hour_map_concurent(arr []string, f func(int, bool) string, c_ms chan 
 	c_ms <- newArr
 }
 
-func readHistory(filesPath string, filesNameArray []string) []StreamingHistory {
+func readHistory(filesPath string, filesNameArray []string) ([]StreamingHistory, error) {
 	var streamingHistory []StreamingHistory
 	var tempHistory []StreamingHistory
 
@@ -171,16 +172,17 @@ func readHistory(filesPath string, filesNameArray []string) []StreamingHistory {
 		streamingHistoryData := readFile(filesPath + v)
 		err := json.Unmarshal(streamingHistoryData, &tempHistory)
 		if err != nil {
-			fmt.Printf("failed to Unmarshal json file, error: %v\n", err)
+			// fmt.Printf("failed to Unmarshal json file, error: %v\n", err)
+			return nil, err
 		}
 		streamingHistory = append(streamingHistory, tempHistory...)
 	}
 
-	return streamingHistory
+	return streamingHistory, nil
 }
 
 func createData(filesPath string, filesNameArray []string, timeZone string) error {
-	streamingHistory = readHistory(filesPath, filesNameArray)
+	streamingHistory, _ = readHistory(filesPath, filesNameArray)
 
 	for i := 0; i < len(streamingHistory); i++ {
 		streamingHistory[i].hhmmss = ms_to_hour(streamingHistory[0].MsPlayed, true)
@@ -327,6 +329,12 @@ func uploadFilePost(c *gin.Context) {
 	timeZone := c.PostForm("timeZone")
 	_, err = time.LoadLocation(timeZone)
 	if err != nil {
+		if _, err := os.Stat("upload"); !os.IsNotExist(err) {
+			os.RemoveAll("upload")
+		}
+		if _, err := os.Stat("df"); !os.IsNotExist(err) {
+			os.RemoveAll("df")
+		}
 		c.SetCookie("errorMessage", "Time zone not found", 10, "/", c.Request.URL.Hostname(), false, true)
 		c.Redirect(http.StatusFound, "/upload")
 		return
