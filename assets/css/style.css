@@ -1,3 +1,18 @@
 body {
   font-family: sans-serif;
 }
+
+.dataTables_filter {
+  float: left !important;
+  padding-top: 6px;
+}
+
+.dataTables_filter input {
+  width: 120px;
+  height: 28px;
+}
+
+.dataTables_paginate {
+  float: right !important;
+  padding-top: 8px !important;
+}

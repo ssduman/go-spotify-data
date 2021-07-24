@@ -7,6 +7,7 @@ var chart1 = new Chart(ctx1, {
             {
                 label: "Duration",
                 data: intervalData,
+                backgroundColor: Array(intervalData.length).fill("rgba(255, 99, 132, 0.2)"),
                 borderWidth: 1,
             },
         ],
@@ -17,6 +18,10 @@ var chart1 = new Chart(ctx1, {
                 beginAtZero: true,
             },
         },
+        title: {
+            display: true,
+            text: "Duration Distribution",
+        }
     },
 });
 
@@ -29,6 +34,7 @@ var chart2 = new Chart(ctx2, {
             {
                 label: "Month",
                 data: monthlyData,
+                backgroundColor: Array(intervalData.length).fill("rgba(54, 162, 235, 0.2)"),
                 borderWidth: 1,
             },
         ],
@@ -39,6 +45,10 @@ var chart2 = new Chart(ctx2, {
                 beginAtZero: true,
             },
         },
+        title: {
+            display: true,
+            text: "Monthly Distribution",
+        }
     },
 });
 
@@ -51,6 +61,7 @@ var chart3 = new Chart(ctx3, {
             {
                 label: "Hour",
                 data: hourData,
+                backgroundColor: Array(hourDataLabel.length).fill("rgba(255, 206, 86, 0.2)"),
                 borderWidth: 1,
             },
         ],
@@ -66,6 +77,10 @@ var chart3 = new Chart(ctx3, {
                     autoSkip: false
                 }
             }]
+        },
+        title: {
+            display: true,
+            text: "Hourly Distribution",
         },
         plugins: {
             datalabels: {
@@ -84,16 +99,19 @@ var chart4 = new Chart(ctx4, {
             {
                 label: "Top 1",
                 data: monthTop1Count,
+                backgroundColor: Array(intervalData.length).fill("rgba(75, 192, 192, 0.2)"),
                 borderWidth: 1,
             },
             {
                 label: "Top 2",
                 data: monthTop2Count,
+                backgroundColor: Array(intervalData.length).fill("rgba(153, 102, 255, 0.2)"),
                 borderWidth: 1,
             },
             {
                 label: "Top 3",
                 data: monthTop3Count,
+                backgroundColor: Array(intervalData.length).fill("rgba(255, 159, 64, 0.2)"),
                 borderWidth: 1,
             },
         ],
@@ -103,6 +121,10 @@ var chart4 = new Chart(ctx4, {
             y: {
                 beginAtZero: true,
             },
+        },
+        title: {
+            display: true,
+            text: "Monthly Top 3 Artists",
         },
         plugins: {
             tooltip: {

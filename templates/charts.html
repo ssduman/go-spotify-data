@@ -3,7 +3,7 @@
   {{block "header" .}} {{end}}
 
     <div class="container">
-      <div class="row">
+      <div class="row pt-4">
         <div class="col-sm">
           <canvas id="chart1" width="400" height="400"></canvas>
         </div>
@@ -11,12 +11,17 @@
           <canvas id="chart2" width="400" height="400"></canvas>
         </div>
       </div>
-      <div class="row">
+      <div class="row pt-4">
         <div class="col-sm">
           <canvas id="chart3" width="400" height="400"></canvas>
         </div>
         <div class="col-sm">
-          <table id="history" class="display" style="width: 100%">
+          <canvas id="top_month" width="400" height="400"></canvas>
+        </div>
+      </div>
+      <div class="row pt-4">
+        <div class="col-sm">
+          <table id="history" class="cell-border" style="width: 100%">
             <thead>
               <tr>
                 <th>Artist</th>
@@ -27,65 +32,60 @@
             </thead>
           </table>
         </div>
-      </div>
-      <div class="row">
         <div class="col-sm">
-          <table id="top_1" class="display" style="width: 100%">
-            <thead>
-              <tr>
-                <th>Artist</th>
-                <th>Song</th>
-                <th>Play Count</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <div class="col-sm">
-          <table id="top_2" class="display" style="width: 100%">
-            <thead>
-              <tr>
-                <th>Artist</th>
-                <th>Song</th>
-                <th>Play Time</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm">
-          <table id="top_artist" class="display" style="width: 100%">
-            <thead>
-              <tr>
-                <th>Artist</th>
-                <th>Play Count</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <div class="col-sm">
-          <table id="top_artist_time" class="display" style="width: 100%">
-            <thead>
-              <tr>
-                <th>Artist</th>
-                <th>Play Time</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm">
-          <canvas id="top_month" width="400" height="400"></canvas>
-        </div>
-        <div class="col-sm">
-          <table id="nonstop_play" class="display" style="width: 100%">
+          <table id="nonstop_play" class="cell-border" style="width: 100%">
             <thead>
               <tr>
                 <th>Start Time</th>
                 <th>End Time</th>
                 <th>Play Time</th>
                 <th>Track Count</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+      <div class="row pt-4">
+        <div class="col-sm">
+          <table id="top_tracks" class="cell-border" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Artist</th>
+                <th>Song</th>
+                <th>Play Count</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table id="top_tracks_time" class="cell-border" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Artist</th>
+                <th>Song</th>
+                <th>Play Time</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+      <div class="row pt-4">
+        <div class="col-sm">
+          <table id="top_artist" class="cell-border" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Artist</th>
+                <th>Play Count</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="col-sm">
+          <table id="top_artist_time" class="cell-border" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Artist</th>
+                <th>Play Time</th>
               </tr>
             </thead>
           </table>
@@ -139,7 +139,7 @@
 
       $(document).ready(function () {
 
-        // $("#history").append('<caption style="caption-side: top-right"> History </caption>');
+        $("#history").append('<caption style="caption-side: top; text-align: center; font-size: 24"> History </caption>');
         $("#history").DataTable(
           {
             data: records,
@@ -149,44 +149,74 @@
               {"data": "endTime"},
               {"data": "hhmmss"}
       		  ],
-            order: [[ 2, "asc" ]]
+            order: [[ 2, "asc" ]],
+            info: false,
+            sPaginationType: "listbox",
+            dom: '<"bottom">rt<"bottom"fp><"clear">',
+            lengthChange: false,
           }
         );
-
-        $("#top_1").DataTable(
-          {
-            data: top_artists_tracks_count,
-            order: [[ 2, "desc" ]]
-          }
-        );
-
-        $("#top_2").DataTable(
-          {
-            data: top_artists_tracks_playtime,
-            order: [[ 2, "desc" ]]
-          }
-        );
-
-        $("#top_artist").DataTable(
-          {
-            data: top_artist,
-            order: [[ 1, "desc" ]]
-          }
-        );
-
-        $("#top_artist_time").DataTable(
-          {
-            data: top_artist_time,
-            order: [[ 1, "desc" ]]
-          }
-        );
-
+        
+        $("#nonstop_play").append('<caption style="caption-side: top; text-align: center; font-size: 24"> Non-stop Playing </caption>');
         $("#nonstop_play").DataTable(
           {
             data: nonstop_play,
-            order: [[ 2, "desc" ]]
+            order: [[ 2, "desc" ]],
+            info: false,
+            sPaginationType: "listbox",
+            dom: '<"bottom">rt<"bottom"fp><"clear">',
+            lengthChange: false,
           }
         );
+        
+        $("#top_tracks").append('<caption style="caption-side: top; text-align: center; font-size: 24"> Top Artists </caption>');
+        $("#top_tracks").DataTable(
+          {
+            data: top_artists_tracks_count,
+            order: [[ 2, "desc" ]],
+            info: false,
+            sPaginationType: "listbox",
+            dom: '<"bottom">rt<"bottom"fp><"clear">',
+            lengthChange: false,
+          }
+        );
+
+        $("#top_tracks_time").append('<caption style="caption-side: top; text-align: center; font-size: 24"> Top Artists </caption>');
+        $("#top_tracks_time").DataTable(
+          {
+            data: top_artists_tracks_playtime,
+            order: [[ 2, "desc" ]],
+            info: false,
+            sPaginationType: "listbox",
+            dom: '<"bottom">rt<"bottom"fp><"clear">',
+            lengthChange: false,
+          }
+        );
+        
+        $("#top_artist").append('<caption style="caption-side: top; text-align: center; font-size: 24"> Top Tracks </caption>');
+        $("#top_artist").DataTable(
+          {
+            data: top_artist,
+            order: [[ 1, "desc" ]],
+            info: false,
+            sPaginationType: "listbox",
+            dom: '<"bottom">rt<"bottom"fp><"clear">',
+            lengthChange: false,
+          }
+        );
+        
+        $("#top_artist_time").append('<caption style="caption-side: top; text-align: center; font-size: 24"> Top Tracks </caption>');
+        $("#top_artist_time").DataTable(
+          {
+            data: top_artist_time,
+            order: [[ 1, "desc" ]],
+            info: false,
+            sPaginationType: "listbox",
+            dom: '<"bottom">rt<"bottom"fp><"clear">',
+            lengthChange: false,
+          }
+        );
+
       });
     </script>
 
