@@ -4,8 +4,9 @@
 # heroku container:push web -a go-spotify-data
 # heroku container:release web -a go-spotify-data
 
-###############################################################################
-## method 0.5 -> 246mb
+#########
+
+## method 1 -> 246mb
 # https://www.youtube.com/watch?v=FQS1p88Q0q8
 FROM golang:alpine
 
@@ -17,16 +18,17 @@ RUN CGO_ENABLED=0 go build -o /bin/app .
 
 FROM python:slim
 
+RUN pip install --no-cache-dir numpy pandas
 COPY . .
 COPY --from=0 /bin/app /bin/app
-RUN pip install --no-cache-dir numpy pandas
 
 ENV IS_DOCKER=true
-ENTRYPOINT /bin/app --port $PORT
+ENTRYPOINT ["/bin/app", "--port", "${PORT}"]
 # EXPOSE 8080
 
-###############################################################################
-## method 1 -> 542mb
+#########
+
+## method 2 -> 542mb
 # FROM golang:alpine
 
 # ADD . /go/src/gotify
@@ -42,8 +44,9 @@ ENTRYPOINT /bin/app --port $PORT
 # ENTRYPOINT /gotify --port $PORT
 # # EXPOSE 8080
 
-###############################################################################
-## method 2 -> 1.25gb
+#########
+
+## method 3 -> 1.25gb
 # FROM golang:latest
 
 # ADD . /go/src/gotify
@@ -61,4 +64,4 @@ ENTRYPOINT /bin/app --port $PORT
 # ENTRYPOINT /gotify --port 8080 --host="0.0.0.0"
 # EXPOSE 8080
 
-###############################################################################
+#########
