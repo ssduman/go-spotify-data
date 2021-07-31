@@ -17,14 +17,26 @@
 <table>
     <tr>
         <td align="center">
-            <img src="https://github.com/ssduman/go-spotify-data/blob/master/img/charts1.png" alt="home-page" width="384" height="216">
+            <img src="https://github.com/ssduman/go-spotify-data/blob/master/img/upload.jpg" alt="home-page" width="384" height="216">
             <br />
-            <i> 1 </i>
+            <i> upload page </i>
         </td>
         <td align="center">
-            <img src="https://github.com/ssduman/go-spotify-data/blob/master/img/charts2.png" alt="play-okey" width="384" height="216">
+            <img src="https://github.com/ssduman/go-spotify-data/blob/master/img/charts1.jpg" alt="play-okey" width="384" height="216">
             <br />
-            <i> 2 </i>
+            <i> distributions </i>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <img src="https://github.com/ssduman/go-spotify-data/blob/master/img/charts2.jpg" alt="home-page" width="384" height="216">
+            <br />
+            <i> charts </i>
+        </td>
+        <td align="center">
+            <img src="https://github.com/ssduman/go-spotify-data/blob/master/img/charts3.jpg" alt="play-okey" width="384" height="216">
+            <br />
+            <i> top tracks tables </i>
         </td>
     </tr>
 </table>
