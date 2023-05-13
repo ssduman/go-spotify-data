@@ -1,5 +1,5 @@
 # Spotify Data Visualizer #
-* Full stack website for Spotify data: https://go-spotify-data.herokuapp.com/
+* Full stack website for Spotify data.
 ## Specifications: ##
 * Go to https://www.spotify.com/us/account/privacy/ and download your data.
 * No data is kept, uploads and auxilary files are deleted instantly.
@@ -40,6 +40,3 @@
         </td>
     </tr>
 </table>
-
-### Bugs and Limitations: ###
-* Due to free version of Heroku, the site waking up like in 30 seconds if sleeping for the first time.
