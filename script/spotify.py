@@ -24,9 +24,8 @@ def ms_to_hour(ms, hour=False):
 
 def top3(spotify_df):
     top_monthly_df = pd.DataFrame(spotify_df)
-    top_monthly_df.set_index("endTime", drop=False, inplace=True)
-    top_monthly_df = top_monthly_df.resample("M").artistName.apply(lambda x: x.value_counts().head(3)).reset_index()
     top_monthly_df.set_index("endTime", drop=True, inplace=True)
+    top_monthly_df = top_monthly_df.resample("ME").artistName.apply(lambda x: x.value_counts().head(3)).reset_index()
     top_monthly_df = top_monthly_df.rename(columns={"artistName": "count", "level_1": "artistName"})
     top_monthly_df["endTime"] = top_monthly_df.index.tolist()
     top_monthly_df = top_monthly_df.reset_index(drop=True)
@@ -36,7 +35,7 @@ def intervals(spotify_df):
     interval = spotify_df["msPlayed"].tolist()
     interval_df = pd.DataFrame(interval, columns=["Duration"])
     interval_range = np.arange(0, max(interval) + 120000, 120000)
-    interval_df = interval_df.groupby(pd.cut(interval_df["Duration"], interval_range)).count()
+    interval_df = interval_df.groupby(pd.cut(interval_df["Duration"], interval_range), observed=True).count()
     interval_new_df = pd.DataFrame({
         "intervat": [str(i) for i in interval_df.index.tolist()],
         "count": interval_df["Duration"].tolist()
@@ -57,7 +56,7 @@ def make_tracks(spotify_df):
     top_artists_tracks_df = top_artists_tracks_df.reset_index(drop=True)
     top_artists_tracks_df.to_csv("df/top_artists_tracks_count_df.csv", index=False)
 
-    top_artists_tracks_df = spotify_df.groupby(["artistName", "trackName"]).sum().reset_index()
+    top_artists_tracks_df = spotify_df.groupby(["artistName", "trackName"]).sum(numeric_only=True).reset_index()
     top_artists_tracks_df["msPlayed"] = top_artists_tracks_df["msPlayed"].apply(lambda x: ms_to_hour(x, hour=True))
     top_artists_tracks_df = top_artists_tracks_df.sort_values(by=["msPlayed"], ascending=False)
     top_artists_tracks_df = top_artists_tracks_df.rename(columns={"msPlayed": "playTime"})
@@ -73,7 +72,7 @@ def make_artists(spotify_df):
     top_artist_df = pd.DataFrame(top_artist, columns=["Artist", "Count"])
     top_artist_df.to_csv("df/top_artist_df.csv", index=False)
 
-    top_artist_time_df = spotify_df[["artistName", "msPlayed"]].copy().groupby(["artistName"]).sum().reset_index()
+    top_artist_time_df = spotify_df[["artistName", "msPlayed"]].copy().groupby(["artistName"]).sum(numeric_only=True).reset_index()
     top_artist_time_df["msPlayed"] = top_artist_time_df["msPlayed"].apply(lambda x: ms_to_hour(x, hour=True))
     top_artist_time_df = top_artist_time_df.sort_values(by=["msPlayed"], ascending=False)
     top_artist_time_df = top_artist_time_df.rename(columns={"msPlayed": "playTime"})
@@ -94,7 +93,7 @@ def distributions(spotify_df):
 
     monthly_df = pd.DataFrame(spotify_df["endTime"], columns=["endTime"])
     monthly_df.set_index("endTime", drop=False, inplace=True)
-    monthly_df = monthly_df.resample('M').count().dropna()
+    monthly_df = monthly_df.resample('ME').count().dropna()
     xs = [str(x).split("T")[0] for x in monthly_df.index.values]
     monthly_df.index = xs
     monthly_new_df = pd.DataFrame({
@@ -154,8 +153,9 @@ def main():
         for history_file in sorted(args.files):
             with open(args.path + history_file, encoding="utf8") as f:
                 spotify.extend(json.load(f))
-    except:
-        pass
+        # print(f"[python] history data count: {len(spotify)}, sample: {spotify[0]}")
+    except Exception as e:
+        print(f"[python] exception occurred while reading history: {e}")
 
     try:
         spotify_df = pd.DataFrame.from_records(spotify)
@@ -164,8 +164,8 @@ def main():
         spotify_df["endTime"] = spotify_df["endTime"].dt.tz_localize(tz="UTC")
         spotify_df["endTime"] = spotify_df["endTime"].dt.tz_convert(args.timeZone)
         spotify_df.to_csv("df/spotify_df.csv", index=False)
-    except:
-        pass
+    except Exception as e:
+        print(f"[python] exception occurred while creating df: {e}")
 
     try:
         top3(spotify_df)
@@ -174,8 +174,8 @@ def main():
         make_artists(spotify_df)
         distributions(spotify_df)
         nonstop_playing(spotify_df)
-    except:
-        pass
+    except Exception as e:
+        print(f"[python] exception occurred while parsing df: {e}")
 
 if __name__ == "__main__":
     main()
